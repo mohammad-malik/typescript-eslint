@@ -566,9 +566,12 @@ function collectTypeParameterUsageCounts(
       visitType(typeParameter, false);
     }
 
+    // Resolving the return type first avoids a circularity in inferred
+    // recursive return types, which would otherwise be reported as `any`.
+    const returnType = signature.getReturnType();
+
     visitType(
-      checker.getTypePredicateOfSignature(signature)?.type ??
-        signature.getReturnType(),
+      checker.getTypePredicateOfSignature(signature)?.type ?? returnType,
       false,
       true,
     );
